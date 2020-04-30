@@ -1,105 +1,67 @@
-// +build ignore
-
 package ascii
 
 import (
-  "fmt"
-  "reflect"
-  "strings"
-  "testing"
-
-  climodels "github.com/thewizardplusplus/go-chess-cli/models"
-  models "github.com/thewizardplusplus/go-chess-models"
-  "github.com/thewizardplusplus/go-chess-models/encoding/uci"
-  "github.com/thewizardplusplus/go-chess-models/pieces"
+	"reflect"
+	"testing"
 )
 
-const (
-  kiwipete = "r3k2r/p1ppqpb1/bn2pnp1/3PN3" +
-    "/1p2P3/2N2Q1p/PPPBBPPP/R3K2R"
-)
+func TestBoardEncoder(test *testing.T) {
+	margins := Margins{
+		Stone: StoneMargins{
+			HorizontalMargins: HorizontalMargins{
+				Left:  1,
+				Right: 2,
+			},
+			VerticalMargins: VerticalMargins{
+				Top:    3,
+				Bottom: 4,
+			},
+		},
+		Legend: LegendMargins{
+			Column: VerticalMargins{
+				Top:    5,
+				Bottom: 6,
+			},
+			Row: HorizontalMargins{
+				Left:  7,
+				Right: 8,
+			},
+		},
+	}
+	encoder := NewBoardEncoder(
+		EncodeStone,
+		"x",
+		margins,
+		2,
+	)
 
-func TestNewPieceStorageEncoder(
-  test *testing.T,
-) {
-  margins := Margins{
-    Piece: PieceMargins{
-      HorizontalMargins: HorizontalMargins{
-        Left:  1,
-        Right: 2,
-      },
-      VerticalMargins: VerticalMargins{
-        Top:    3,
-        Bottom: 4,
-      },
-    },
-    Legend: LegendMargins{
-      File: VerticalMargins{
-        Top:    5,
-        Bottom: 6,
-      },
-      Rank: HorizontalMargins{
-        Left:  7,
-        Right: 8,
-      },
-    },
-  }
-  colorizer := func(
-    text string,
-    color climodels.OptionalColor,
-  ) string {
-    panic("not implemented")
-  }
-  encoder := NewPieceStorageEncoder(
-    uci.EncodePiece,
-    "x",
-    margins,
-    colorizer,
-    models.White,
-    2,
-  )
+	gotEncoder := reflect.
+		ValueOf(encoder.encoder).
+		Pointer()
+	wantEncoder := reflect.
+		ValueOf(EncodeStone).
+		Pointer()
+	if gotEncoder != wantEncoder {
+		test.Fail()
+	}
 
-  gotEncoder := reflect.
-    ValueOf(encoder.encoder).
-    Pointer()
-  wantEncoder := reflect.
-    ValueOf(uci.EncodePiece).
-    Pointer()
-  if gotEncoder != wantEncoder {
-    test.Fail()
-  }
+	if encoder.placeholder != "x" {
+		test.Fail()
+	}
 
-  if encoder.placeholder != "x" {
-    test.Fail()
-  }
+	if !reflect.DeepEqual(
+		encoder.margins,
+		margins,
+	) {
+		test.Fail()
+	}
 
-  if !reflect.DeepEqual(
-    encoder.margins,
-    margins,
-  ) {
-    test.Fail()
-  }
-
-  gotColorizer := reflect.
-    ValueOf(encoder.colorizer).
-    Pointer()
-  wantColorizer := reflect.
-    ValueOf(colorizer).
-    Pointer()
-  if gotColorizer != wantColorizer {
-    test.Fail()
-  }
-
-  if encoder.topColor != models.White {
-    test.Fail()
-  }
-
-  if encoder.pieceWidth != 2 {
-    test.Fail()
-  }
+	if encoder.stoneWidth != 2 {
+		test.Fail()
+	}
 }
 
-func TestPieceStorageEncoderEncodePieceStorage(
+/*func TestPieceStorageEncoderEncodePieceStorage(
   test *testing.T,
 ) {
   type fields struct {
@@ -772,4 +734,4 @@ func TestPieceStorageEncoderEncodePieceStorage(
       test.Fail()
     }
   }
-}
+}*/

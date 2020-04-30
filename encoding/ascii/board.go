@@ -124,10 +124,6 @@ func (encoder BoardEncoder) wrapWithSpaces(
 func (encoder BoardEncoder) spaces(
 	length int,
 ) string {
-	if length == 0 {
-		return ""
-	}
-
 	return strings.Repeat(" ", length)
 }
 
