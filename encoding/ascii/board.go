@@ -71,6 +71,7 @@ func (encoder BoardEncoder) EncodeBoard(
 			currentRow = ""
 		}
 	}
+	reverse(rows)
 
 	var sparseRows []string
 	for _, row := range rows {
@@ -187,4 +188,13 @@ func (encoder BoardEncoder) emptyLine(
 	}
 
 	return line
+}
+
+func reverse(strings []string) {
+	left, right := 0, len(strings)-1
+	for left < right {
+		strings[left], strings[right] =
+			strings[right], strings[left]
+		left, right = left+1, right-1
+	}
 }
