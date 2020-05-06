@@ -59,22 +59,14 @@ var (
 
 type colorCodeGroup map[models.Color]int
 
-type colorizer func(
+func colorize(
 	text string,
 	color models.Color,
-) string
-
-func makeColorizer(
 	colorsCodes colorCodeGroup,
-) colorizer {
-	return func(
-		text string,
-		color models.Color,
-	) string {
-		return setTTYMode(colorsCodes[color]) +
-			text +
-			setTTYMode(0)
-	}
+) string {
+	return setTTYMode(colorsCodes[color]) +
+		text +
+		setTTYMode(0)
 }
 
 func setTTYMode(mode int) string {
@@ -200,11 +192,19 @@ func writePrompt(
 		mark = "(searching) "
 	}
 
-	text = cliascii.EncodeColor(color)
+	prompt := makePrompt(color, mark)
 	// don't break the line
-	fmt.Printf("%s> %s", text, mark)
+	fmt.Print(prompt)
 
 	return nil
+}
+
+func makePrompt(
+	color models.Color,
+	data interface{},
+) string {
+	prompt := cliascii.EncodeColor(color)
+	return fmt.Sprintf("%s> %v", prompt, data)
 }
 
 func readMove(
@@ -374,17 +374,19 @@ func main() {
 		placeholder = "."
 	}
 	if *colorful {
-		stoneColorizer :=
-			makeColorizer(colorCodeGroup{
-				models.Black: *blackColor,
-				models.White: *whiteColor,
-			})
 		baseStoneEncoder := stoneEncoder
 		stoneEncoder = func(
 			color models.Color,
 		) string {
 			text := baseStoneEncoder(color)
-			return stoneColorizer(text, color)
+			return colorize(
+				text,
+				color,
+				colorCodeGroup{
+					models.Black: *blackColor,
+					models.White: *whiteColor,
+				},
+			)
 		}
 	}
 
@@ -409,22 +411,26 @@ func main() {
 	}
 loop:
 	for {
+		var currentColor models.Color
 		var move models.Move
 		var err error
 		switch side {
 		case climodels.Human:
+			currentColor = parsedHumanColor
 			move, err = readMove(
 				reader,
 				boardEncoder,
 				board,
-				parsedHumanColor,
+				currentColor,
 				side,
 			)
 		case climodels.Searcher:
+			currentColor =
+				parsedHumanColor.Negative()
 			move, err = searchMove(
 				boardEncoder,
 				board,
-				parsedHumanColor.Negative(),
+				currentColor,
 				side,
 				settings,
 			)
@@ -438,7 +444,10 @@ loop:
 		case nil:
 		case models.ErrAlreadyLoss,
 			models.ErrAlreadyWin:
-			log.Print("game in the state: ", err)
+			prompt :=
+				makePrompt(currentColor, err)
+			fmt.Println(prompt)
+
 			break loop
 		default:
 			log.Print("error: ", err)
