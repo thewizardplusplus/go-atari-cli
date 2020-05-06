@@ -309,6 +309,21 @@ func main() {
 		10*time.Second,
 		"building duration (e.g. 72h3m0.5s)",
 	)
+	parallelSimulator := flag.Bool(
+		"parallelSimulator",
+		false,
+		"parallel simulator",
+	)
+	parallelBulkySimulator := flag.Bool(
+		"parallelBulkySimulator",
+		false,
+		"parallel bulky simulator",
+	)
+	parallelBuilder := flag.Bool(
+		"parallelBuilder",
+		true,
+		"parallel builder",
+	)
 	useUnicode := flag.Bool(
 		"unicode",
 		false,
@@ -406,8 +421,11 @@ func main() {
 			1,
 		)
 	settings := searchSettings{
-		maximalPass:     *pass,
-		maximalDuration: *duration,
+		maximalPass:            *pass,
+		maximalDuration:        *duration,
+		parallelSimulator:      *parallelSimulator,
+		parallelBulkySimulator: *parallelBulkySimulator,
+		parallelBuilder:        *parallelBuilder,
 	}
 loop:
 	for {
