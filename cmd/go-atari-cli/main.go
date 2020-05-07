@@ -13,11 +13,11 @@ import (
 	"strings"
 	"time"
 
-	cliascii "github.com/thewizardplusplus/go-atari-cli/encoding/ascii"
-	cliunicode "github.com/thewizardplusplus/go-atari-cli/encoding/unicode"
+	"github.com/thewizardplusplus/go-atari-cli/encoding/ascii"
+	"github.com/thewizardplusplus/go-atari-cli/encoding/unicode"
 	climodels "github.com/thewizardplusplus/go-atari-cli/models"
 	models "github.com/thewizardplusplus/go-atari-models"
-	"github.com/thewizardplusplus/go-atari-models/encoding/ascii"
+	"github.com/thewizardplusplus/go-atari-models/encoding/sgf"
 	"github.com/thewizardplusplus/go-atari-montecarlo/builders"
 	"github.com/thewizardplusplus/go-atari-montecarlo/builders/terminators"
 	"github.com/thewizardplusplus/go-atari-montecarlo/searchers"
@@ -33,24 +33,24 @@ const (
 )
 
 var (
-	wideMargins = cliascii.Margins{
-		Stone: cliascii.StoneMargins{
-			HorizontalMargins: cliascii.HorizontalMargins{
+	wideMargins = ascii.Margins{
+		Stone: ascii.StoneMargins{
+			HorizontalMargins: ascii.HorizontalMargins{
 				Left: 1,
 			},
-			VerticalMargins: cliascii.VerticalMargins{
+			VerticalMargins: ascii.VerticalMargins{
 				Bottom: 1,
 			},
 		},
-		Legend: cliascii.LegendMargins{
-			Column: cliascii.VerticalMargins{
+		Legend: ascii.LegendMargins{
+			Column: ascii.VerticalMargins{
 				Top: 1,
 			},
-			Row: cliascii.HorizontalMargins{
+			Row: ascii.HorizontalMargins{
 				Right: 1,
 			},
 		},
-		Board: cliascii.VerticalMargins{
+		Board: ascii.VerticalMargins{
 			Top:    1,
 			Bottom: 1,
 		},
@@ -174,7 +174,7 @@ func check(
 }
 
 func writePrompt(
-	boardEncoder cliascii.BoardEncoder,
+	boardEncoder ascii.BoardEncoder,
 	board models.Board,
 	color models.Color,
 	side climodels.Side,
@@ -203,13 +203,13 @@ func makePrompt(
 	color models.Color,
 	data interface{},
 ) string {
-	prompt := cliascii.EncodeColor(color)
+	prompt := ascii.EncodeColor(color)
 	return fmt.Sprintf("%s> %v", prompt, data)
 }
 
 func readMove(
 	reader *bufio.Reader,
-	boardEncoder cliascii.BoardEncoder,
+	boardEncoder ascii.BoardEncoder,
 	board models.Board,
 	color models.Color,
 	side climodels.Side,
@@ -233,7 +233,7 @@ func readMove(
 	}
 
 	text = strings.TrimSuffix(text, "\n")
-	point, err := ascii.DecodePoint(text)
+	point, err := sgf.DecodePoint(text)
 	if err != nil {
 		return models.Move{}, fmt.Errorf(
 			"unable to decode the point: %s",
@@ -257,7 +257,7 @@ func readMove(
 }
 
 func searchMove(
-	boardEncoder cliascii.BoardEncoder,
+	boardEncoder ascii.BoardEncoder,
 	board models.Board,
 	color models.Color,
 	side climodels.Side,
@@ -363,7 +363,7 @@ func main() {
 	)
 
 	parsedHumanColor, err :=
-		cliascii.DecodeColor(*humanColor)
+		ascii.DecodeColor(*humanColor)
 	switch {
 	case err == nil:
 	case *humanColor == "random":
@@ -379,13 +379,13 @@ func main() {
 		)
 	}
 
-	var stoneEncoder cliascii.StoneEncoder
+	var stoneEncoder ascii.StoneEncoder
 	var placeholder string
 	if *useUnicode {
-		stoneEncoder = cliunicode.EncodeStone
+		stoneEncoder = unicode.EncodeStone
 		placeholder = "\u00b7"
 	} else {
-		stoneEncoder = cliascii.EncodeStone
+		stoneEncoder = ascii.EncodeStone
 		placeholder = "."
 	}
 	if *colorful {
@@ -405,7 +405,7 @@ func main() {
 		}
 	}
 
-	var margins cliascii.Margins
+	var margins ascii.Margins
 	if *wide {
 		margins = wideMargins
 	}
@@ -413,13 +413,12 @@ func main() {
 	side :=
 		climodels.NewSide(parsedHumanColor)
 	reader := bufio.NewReader(os.Stdin)
-	boardEncoder :=
-		cliascii.NewBoardEncoder(
-			stoneEncoder,
-			placeholder,
-			margins,
-			1,
-		)
+	boardEncoder := ascii.NewBoardEncoder(
+		stoneEncoder,
+		placeholder,
+		margins,
+		1,
+	)
 	settings := searchSettings{
 		maximalPass:            *pass,
 		maximalDuration:        *duration,
@@ -453,8 +452,7 @@ loop:
 				settings,
 			)
 			if err == nil {
-				text :=
-					ascii.EncodePoint(move.Point)
+				text := sgf.EncodePoint(move.Point)
 				fmt.Println(text)
 			}
 		}
