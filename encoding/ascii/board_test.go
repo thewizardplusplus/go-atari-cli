@@ -98,9 +98,9 @@ func TestBoardEncoderEncodeBoard(
 					},
 				),
 			},
-			want: "3xxx\n" +
-				"2xxx\n" +
-				"1xxx\n" +
+			want: "cxxx\n" +
+				"bxxx\n" +
+				"axxx\n" +
 				" abc",
 		},
 		data{
@@ -163,9 +163,9 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "3xox\n" +
-				"2o*o\n" +
-				"1xox\n" +
+			want: "cxox\n" +
+				"bo*o\n" +
+				"axox\n" +
 				" abc",
 		},
 		data{
@@ -235,9 +235,9 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "3 x   o   x  \n" +
-				"2 o   *   o  \n" +
-				"1 x   o   x  \n" +
+			want: "c x   o   x  \n" +
+				"b o   *   o  \n" +
+				"a x   o   x  \n" +
 				"  a   b   c  ",
 		},
 		data{
@@ -308,15 +308,15 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: strings.Repeat(" ", 4) + "\n" +
-				"3xox\n" +
+				"cxox\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
-				"2o*o\n" +
+				"bo*o\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
-				"1xox\n" +
+				"axox\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				" abc",
@@ -388,9 +388,9 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: " 3  xox\n" +
-				" 2  o*o\n" +
-				" 1  xox\n" +
+			want: " c  xox\n" +
+				" b  o*o\n" +
+				" a  xox\n" +
 				"    abc",
 		},
 		data{
@@ -460,9 +460,9 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "3xox\n" +
-				"2o*o\n" +
-				"1xox\n" +
+			want: "cxox\n" +
+				"bo*o\n" +
+				"axox\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				" abc\n" +
 				strings.Repeat(" ", 4) + "\n" +
@@ -550,15 +550,15 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: strings.Repeat(" ", 4*4) + "\n" +
-				" 3   x   o   x  \n" +
+				" c   x   o   x  \n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
-				" 2   o   *   o  \n" +
+				" b   o   *   o  \n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
-				" 1   x   o   x  \n" +
+				" a   x   o   x  \n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
@@ -632,9 +632,9 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: strings.Repeat(" ", 4) + "\n" +
-				"3xox\n" +
-				"2o*o\n" +
-				"1xox\n" +
+				"cxox\n" +
+				"bo*o\n" +
+				"axox\n" +
 				" abc\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4),

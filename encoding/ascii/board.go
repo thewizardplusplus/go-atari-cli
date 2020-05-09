@@ -1,10 +1,10 @@
 package ascii
 
 import (
-	"strconv"
 	"strings"
 
 	models "github.com/thewizardplusplus/go-atari-models"
+	"github.com/thewizardplusplus/go-atari-models/encoding/sgf"
 )
 
 // StoneEncoder ...
@@ -47,8 +47,9 @@ func (encoder BoardEncoder) EncodeBoard(
 	points := board.Size().Points()
 	for _, point := range points {
 		if len(currentRow) == 0 {
+			axis := sgf.EncodeAxis(point.Row)
 			currentRow += encoder.wrapWithSpaces(
-				strconv.Itoa(point.Row+1),
+				string(axis),
 				legendMargins.Row,
 			)
 		}
@@ -90,8 +91,9 @@ func (encoder BoardEncoder) EncodeBoard(
 	)
 	width := board.Size().Width
 	for i := 0; i < width; i++ {
+		axis := sgf.EncodeAxis(i)
 		legendRow += encoder.wrapWithSpaces(
-			string(i+97),
+			string(axis),
 			stoneMargins.HorizontalMargins,
 		)
 	}
