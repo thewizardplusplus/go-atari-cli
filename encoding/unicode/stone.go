@@ -11,9 +11,9 @@ func EncodeStone(
 	var text string
 	switch color {
 	case models.Black:
-		text = "\u25cb"
-	case models.White:
 		text = "\u25cf"
+	case models.White:
+		text = "\u25cb"
 	}
 
 	return text

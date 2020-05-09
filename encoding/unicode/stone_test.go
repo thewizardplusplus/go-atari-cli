@@ -18,11 +18,11 @@ func TestEncodeStone(test *testing.T) {
 	for _, data := range []data{
 		data{
 			args: args{models.Black},
-			want: "\u25cb",
+			want: "\u25cf",
 		},
 		data{
 			args: args{models.White},
-			want: "\u25cf",
+			want: "\u25cb",
 		},
 	} {
 		got := EncodeStone(data.args.color)
