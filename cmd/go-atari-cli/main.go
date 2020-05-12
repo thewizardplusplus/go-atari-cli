@@ -283,15 +283,11 @@ func searchMove(
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	width := flag.Int(
-		"width",
-		5,
-		"board width",
-	)
-	height := flag.Int(
-		"height",
-		5,
-		"board height",
+	boardInSGF := flag.String(
+		"sgf",
+		"",
+		"board in SGF "+
+			"(default: empty board 5x5)",
 	)
 	humanColor := flag.String(
 		"humanColor",
@@ -355,12 +351,13 @@ func main() {
 	)
 	flag.Parse()
 
-	board := models.NewBoard(
-		models.Size{
-			Width:  *width,
-			Height: *height,
-		},
-	)
+	board, err := sgf.DecodeBoard(*boardInSGF)
+	if err != nil {
+		log.Fatal(
+			"unable to decode the board: ",
+			err,
+		)
+	}
 
 	parsedHumanColor, err :=
 		ascii.DecodeColor(*humanColor)
