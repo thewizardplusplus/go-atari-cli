@@ -412,7 +412,9 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	boardEncoder := ascii.NewBoardEncoder(
 		stoneEncoder,
-		placeholder,
+		ascii.Placeholders{
+			Crosshairs: placeholder,
+		},
 		margins,
 		1,
 	)

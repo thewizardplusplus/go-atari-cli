@@ -12,26 +12,33 @@ type StoneEncoder func(
 	color models.Color,
 ) string
 
+// Placeholders ...
+type Placeholders struct {
+	HorizontalLine string
+	VerticalLine   string
+	Crosshairs     string
+}
+
 // BoardEncoder ...
 type BoardEncoder struct {
-	encoder     StoneEncoder
-	placeholder string
-	margins     Margins
-	stoneWidth  int
+	encoder      StoneEncoder
+	placeholders Placeholders
+	margins      Margins
+	stoneWidth   int
 }
 
 // NewBoardEncoder ...
 func NewBoardEncoder(
 	encoder StoneEncoder,
-	placeholder string,
+	placeholders Placeholders,
 	margins Margins,
 	stoneWidth int,
 ) BoardEncoder {
 	return BoardEncoder{
-		encoder:     encoder,
-		placeholder: placeholder,
-		margins:     margins,
-		stoneWidth:  stoneWidth,
+		encoder:      encoder,
+		placeholders: placeholders,
+		margins:      margins,
+		stoneWidth:   stoneWidth,
 	}
 }
 
@@ -59,7 +66,8 @@ func (encoder BoardEncoder) EncodeBoard(
 		if ok {
 			encodedStone = encoder.encoder(color)
 		} else {
-			encodedStone = encoder.placeholder
+			encodedStone =
+				encoder.placeholders.Crosshairs
 		}
 		currentRow += encoder.wrapWithSpaces(
 			encodedStone,

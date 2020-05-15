@@ -9,6 +9,11 @@ import (
 )
 
 func TestBoardEncoder(test *testing.T) {
+	placeholders := Placeholders{
+		HorizontalLine: "-",
+		VerticalLine:   "|",
+		Crosshairs:     "+",
+	}
 	margins := Margins{
 		Stone: StoneMargins{
 			HorizontalMargins: HorizontalMargins{
@@ -33,7 +38,7 @@ func TestBoardEncoder(test *testing.T) {
 	}
 	encoder := NewBoardEncoder(
 		EncodeStone,
-		"x",
+		placeholders,
 		margins,
 		2,
 	)
@@ -48,7 +53,10 @@ func TestBoardEncoder(test *testing.T) {
 		test.Fail()
 	}
 
-	if encoder.placeholder != "x" {
+	if !reflect.DeepEqual(
+		encoder.placeholders,
+		placeholders,
+	) {
 		test.Fail()
 	}
 
@@ -68,10 +76,10 @@ func TestBoardEncoderEncodeBoard(
 	test *testing.T,
 ) {
 	type fields struct {
-		encoder     StoneEncoder
-		placeholder string
-		margins     Margins
-		stoneWidth  int
+		encoder      StoneEncoder
+		placeholders Placeholders
+		margins      Margins
+		stoneWidth   int
 	}
 	type args struct {
 		board models.Board
@@ -85,10 +93,14 @@ func TestBoardEncoderEncodeBoard(
 	for _, data := range []data{
 		data{
 			fields: fields{
-				encoder:     EncodeStone,
-				placeholder: "x",
-				margins:     Margins{},
-				stoneWidth:  1,
+				encoder: EncodeStone,
+				placeholders: Placeholders{
+					HorizontalLine: "-",
+					VerticalLine:   "|",
+					Crosshairs:     "+",
+				},
+				margins:    Margins{},
+				stoneWidth: 1,
 			},
 			args: args{
 				board: models.NewBoard(
@@ -98,17 +110,21 @@ func TestBoardEncoderEncodeBoard(
 					},
 				),
 			},
-			want: "cxxx\n" +
-				"bxxx\n" +
-				"axxx\n" +
+			want: "c+++\n" +
+				"b+++\n" +
+				"a+++\n" +
 				" abc",
 		},
 		data{
 			fields: fields{
-				encoder:     EncodeStone,
-				placeholder: "x",
-				margins:     Margins{},
-				stoneWidth:  1,
+				encoder: EncodeStone,
+				placeholders: Placeholders{
+					HorizontalLine: "-",
+					VerticalLine:   "|",
+					Crosshairs:     "+",
+				},
+				margins:    Margins{},
+				stoneWidth: 1,
 			},
 			args: args{
 				board: func() models.Board {
@@ -163,15 +179,19 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "cxox\n" +
+			want: "c+o+\n" +
 				"bo*o\n" +
-				"axox\n" +
+				"a+o+\n" +
 				" abc",
 		},
 		data{
 			fields: fields{
-				encoder:     EncodeStone,
-				placeholder: "x",
+				encoder: EncodeStone,
+				placeholders: Placeholders{
+					HorizontalLine: "-",
+					VerticalLine:   "|",
+					Crosshairs:     "+",
+				},
 				margins: Margins{
 					Stone: StoneMargins{
 						HorizontalMargins: HorizontalMargins{
@@ -235,15 +255,19 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "c x   o   x  \n" +
+			want: "c +   o   +  \n" +
 				"b o   *   o  \n" +
-				"a x   o   x  \n" +
+				"a +   o   +  \n" +
 				"  a   b   c  ",
 		},
 		data{
 			fields: fields{
-				encoder:     EncodeStone,
-				placeholder: "x",
+				encoder: EncodeStone,
+				placeholders: Placeholders{
+					HorizontalLine: "-",
+					VerticalLine:   "|",
+					Crosshairs:     "+",
+				},
 				margins: Margins{
 					Stone: StoneMargins{
 						VerticalMargins: VerticalMargins{
@@ -308,7 +332,7 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: strings.Repeat(" ", 4) + "\n" +
-				"cxox\n" +
+				"c+o+\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
@@ -316,15 +340,19 @@ func TestBoardEncoderEncodeBoard(
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
-				"axox\n" +
+				"a+o+\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				" abc",
 		},
 		data{
 			fields: fields{
-				encoder:     EncodeStone,
-				placeholder: "x",
+				encoder: EncodeStone,
+				placeholders: Placeholders{
+					HorizontalLine: "-",
+					VerticalLine:   "|",
+					Crosshairs:     "+",
+				},
 				margins: Margins{
 					Legend: LegendMargins{
 						Row: HorizontalMargins{
@@ -388,15 +416,19 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: " c  xox\n" +
+			want: " c  +o+\n" +
 				" b  o*o\n" +
-				" a  xox\n" +
+				" a  +o+\n" +
 				"    abc",
 		},
 		data{
 			fields: fields{
-				encoder:     EncodeStone,
-				placeholder: "x",
+				encoder: EncodeStone,
+				placeholders: Placeholders{
+					HorizontalLine: "-",
+					VerticalLine:   "|",
+					Crosshairs:     "+",
+				},
 				margins: Margins{
 					Legend: LegendMargins{
 						Column: VerticalMargins{
@@ -460,9 +492,9 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "cxox\n" +
+			want: "c+o+\n" +
 				"bo*o\n" +
-				"axox\n" +
+				"a+o+\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				" abc\n" +
 				strings.Repeat(" ", 4) + "\n" +
@@ -470,8 +502,12 @@ func TestBoardEncoderEncodeBoard(
 		},
 		data{
 			fields: fields{
-				encoder:     EncodeStone,
-				placeholder: "x",
+				encoder: EncodeStone,
+				placeholders: Placeholders{
+					HorizontalLine: "-",
+					VerticalLine:   "|",
+					Crosshairs:     "+",
+				},
 				margins: Margins{
 					Stone: StoneMargins{
 						HorizontalMargins: HorizontalMargins{
@@ -550,7 +586,7 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: strings.Repeat(" ", 4*4) + "\n" +
-				" c   x   o   x  \n" +
+				" c   +   o   +  \n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
@@ -558,7 +594,7 @@ func TestBoardEncoderEncodeBoard(
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
-				" a   x   o   x  \n" +
+				" a   +   o   +  \n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
@@ -568,8 +604,12 @@ func TestBoardEncoderEncodeBoard(
 		},
 		data{
 			fields: fields{
-				encoder:     EncodeStone,
-				placeholder: "x",
+				encoder: EncodeStone,
+				placeholders: Placeholders{
+					HorizontalLine: "-",
+					VerticalLine:   "|",
+					Crosshairs:     "+",
+				},
 				margins: Margins{
 					Board: VerticalMargins{
 						Top:    1,
@@ -632,19 +672,20 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: strings.Repeat(" ", 4) + "\n" +
-				"cxox\n" +
+				"c+o+\n" +
 				"bo*o\n" +
-				"axox\n" +
+				"a+o+\n" +
 				" abc\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4),
 		},
 	} {
 		encoder := BoardEncoder{
-			encoder:     data.fields.encoder,
-			placeholder: data.fields.placeholder,
-			margins:     data.fields.margins,
-			stoneWidth:  data.fields.stoneWidth,
+			encoder: data.fields.encoder,
+			placeholders: data.fields.
+				placeholders,
+			margins:    data.fields.margins,
+			stoneWidth: data.fields.stoneWidth,
 		}
 		got :=
 			encoder.EncodeBoard(data.args.board)
