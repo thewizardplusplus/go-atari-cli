@@ -126,9 +126,16 @@ func (encoder BoardEncoder) EncodeBoard(
 func (encoder BoardEncoder) wrapWithSpaces(
 	text string,
 	margins HorizontalMargins,
+	optionalSymbol ...string,
 ) string {
-	prefix := encoder.spaces(margins.Left)
-	suffix := encoder.spaces(margins.Right)
+	prefix := encoder.spaces(
+		margins.Left,
+		optionalSymbol...,
+	)
+	suffix := encoder.spaces(
+		margins.Right,
+		optionalSymbol...,
+	)
 	return prefix + text + suffix
 }
 
