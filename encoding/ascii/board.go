@@ -186,10 +186,14 @@ func (
 func (encoder BoardEncoder) emptyLines(
 	count int,
 	width int,
+	optionalSeparator ...string,
 ) []string {
 	var lines []string
 	for i := 0; i < count; i++ {
-		line := encoder.emptyLine(width)
+		line := encoder.emptyLine(
+			width,
+			optionalSeparator...,
+		)
 		lines = append(lines, line)
 	}
 
