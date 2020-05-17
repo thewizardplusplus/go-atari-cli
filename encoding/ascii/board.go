@@ -91,6 +91,7 @@ func (encoder BoardEncoder) EncodeBoard(
 				[]string{row},
 				board.Size().Width,
 				stoneMargins.VerticalMargins,
+				encoder.placeholders.VerticalLine,
 			)...,
 		)
 	}
