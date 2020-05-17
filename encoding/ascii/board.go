@@ -133,9 +133,16 @@ func (encoder BoardEncoder) wrapWithSpaces(
 }
 
 func (encoder BoardEncoder) spaces(
-	length int,
+	count int,
+	optionalSymbol ...string,
 ) string {
-	return strings.Repeat(" ", length)
+	var symbol string
+	if len(optionalSymbol) != 0 {
+		symbol = optionalSymbol[0]
+	} else {
+		symbol = " "
+	}
+	return strings.Repeat(symbol, count)
 }
 
 func (
