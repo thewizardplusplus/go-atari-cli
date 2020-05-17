@@ -72,6 +72,7 @@ func (encoder BoardEncoder) EncodeBoard(
 		currentRow += encoder.wrapWithSpaces(
 			encodedStone,
 			stoneMargins.HorizontalMargins,
+			encoder.placeholders.HorizontalLine,
 		)
 
 		lastColumn := board.Size().Height - 1
