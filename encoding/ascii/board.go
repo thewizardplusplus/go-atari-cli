@@ -159,6 +159,7 @@ func (
 	lines []string,
 	width int,
 	margins VerticalMargins,
+	optionalSeparator ...string,
 ) []string {
 	var wrappedLines []string
 	wrappedLines = append(
@@ -166,6 +167,7 @@ func (
 		encoder.emptyLines(
 			margins.Top,
 			width,
+			optionalSeparator...,
 		)...,
 	)
 	wrappedLines = append(
@@ -177,6 +179,7 @@ func (
 		encoder.emptyLines(
 			margins.Bottom,
 			width,
+			optionalSeparator...,
 		)...,
 	)
 
