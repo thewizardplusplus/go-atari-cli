@@ -33,6 +33,17 @@ const (
 )
 
 var (
+	asciiPlaceholders = ascii.Placeholders{
+		HorizontalLine: "-",
+		VerticalLine:   "|",
+		Crosshairs:     "+",
+	}
+	unicodePlaceholders = ascii.Placeholders{
+		HorizontalLine: "\u2500",
+		VerticalLine:   "\u2502",
+		Crosshairs:     "\u253c",
+	}
+
 	wideMargins = ascii.Margins{
 		Stone: ascii.StoneMargins{
 			HorizontalMargins: ascii.HorizontalMargins{
@@ -346,8 +357,13 @@ func main() {
 	)
 	wide := flag.Bool(
 		"wide",
-		false,
+		!false,
 		"display the board wide",
+	)
+	grid := flag.Bool(
+		"grid",
+		true,
+		"display the board grid",
 	)
 	flag.Parse()
 
@@ -377,13 +393,13 @@ func main() {
 	}
 
 	var stoneEncoder ascii.StoneEncoder
-	var placeholder string
+	var placeholders ascii.Placeholders
 	if *useUnicode {
 		stoneEncoder = unicode.EncodeStone
-		placeholder = "\u00b7"
+		placeholders = unicodePlaceholders
 	} else {
 		stoneEncoder = ascii.EncodeStone
-		placeholder = "."
+		placeholders = asciiPlaceholders
 	}
 	if *colorful {
 		baseStoneEncoder := stoneEncoder
@@ -401,6 +417,10 @@ func main() {
 			)
 		}
 	}
+	if !*grid {
+		placeholders.HorizontalLine = " "
+		placeholders.VerticalLine = " "
+	}
 
 	var margins ascii.Margins
 	if *wide {
@@ -412,9 +432,7 @@ func main() {
 	reader := bufio.NewReader(os.Stdin)
 	boardEncoder := ascii.NewBoardEncoder(
 		stoneEncoder,
-		ascii.Placeholders{
-			Crosshairs: placeholder,
-		},
+		placeholders,
 		margins,
 		1,
 	)
