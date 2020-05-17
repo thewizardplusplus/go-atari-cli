@@ -198,18 +198,26 @@ func (encoder BoardEncoder) emptyLines(
 
 func (encoder BoardEncoder) emptyLine(
 	width int,
+	optionalSeparator ...string,
 ) string {
 	stoneMargins := encoder.margins.Stone
 	legendMargins := encoder.margins.Legend
+
+	var separator string
+	if len(optionalSeparator) != 0 {
+		separator = optionalSeparator[0]
+	} else {
+		separator = " "
+	}
 
 	line := encoder.spaces(
 		legendMargins.Row.Width(1),
 	)
 	for i := 0; i < width; i++ {
-		line += encoder.spaces(
-			stoneMargins.
-				Width(encoder.stoneWidth),
-		)
+		line +=
+			encoder.spaces(stoneMargins.Left) +
+				separator +
+				encoder.spaces(stoneMargins.Right)
 	}
 
 	return line
