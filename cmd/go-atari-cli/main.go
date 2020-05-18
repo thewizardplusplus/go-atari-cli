@@ -357,7 +357,7 @@ func main() {
 	)
 	wide := flag.Bool(
 		"wide",
-		!false,
+		false,
 		"display the board wide",
 	)
 	grid := flag.Bool(
@@ -398,7 +398,12 @@ func main() {
 		stoneEncoder = unicode.EncodeStone
 		placeholders = unicodePlaceholders
 	} else {
-		stoneEncoder = ascii.EncodeStone
+		stoneEncoder = func(
+			color models.Color,
+		) string {
+			symbol := sgf.EncodeColor(color)
+			return string(symbol)
+		}
 		placeholders = asciiPlaceholders
 	}
 	if *colorful {

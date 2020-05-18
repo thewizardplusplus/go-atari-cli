@@ -6,9 +6,16 @@ import (
 	"testing"
 
 	models "github.com/thewizardplusplus/go-atari-models"
+	"github.com/thewizardplusplus/go-atari-models/encoding/sgf"
 )
 
 func TestBoardEncoder(test *testing.T) {
+	stoneEncoder := func(
+		color models.Color,
+	) string {
+		symbol := sgf.EncodeColor(color)
+		return string(symbol)
+	}
 	placeholders := Placeholders{
 		HorizontalLine: "-",
 		VerticalLine:   "|",
@@ -37,7 +44,7 @@ func TestBoardEncoder(test *testing.T) {
 		},
 	}
 	encoder := NewBoardEncoder(
-		EncodeStone,
+		stoneEncoder,
 		placeholders,
 		margins,
 		2,
@@ -47,7 +54,7 @@ func TestBoardEncoder(test *testing.T) {
 		ValueOf(encoder.encoder).
 		Pointer()
 	wantEncoder := reflect.
-		ValueOf(EncodeStone).
+		ValueOf(stoneEncoder).
 		Pointer()
 	if gotEncoder != wantEncoder {
 		test.Fail()
@@ -93,7 +100,12 @@ func TestBoardEncoderEncodeBoard(
 	for _, data := range []data{
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
 					VerticalLine:   "|",
@@ -117,7 +129,12 @@ func TestBoardEncoderEncodeBoard(
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
 					VerticalLine:   "|",
@@ -179,14 +196,19 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "c+o+\n" +
-				"bo*o\n" +
-				"a+o+\n" +
+			want: "c+W+\n" +
+				"bWBW\n" +
+				"a+W+\n" +
 				" abc",
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: " ",
 					VerticalLine:   "|",
@@ -255,14 +277,19 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "c +   o   +  \n" +
-				"b o   *   o  \n" +
-				"a +   o   +  \n" +
+			want: "c +   W   +  \n" +
+				"b W   B   W  \n" +
+				"a +   W   +  \n" +
 				"  a   b   c  ",
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
 					VerticalLine:   "|",
@@ -331,14 +358,19 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "c-+---o---+--\n" +
-				"b-o---*---o--\n" +
-				"a-+---o---+--\n" +
+			want: "c-+---W---+--\n" +
+				"b-W---B---W--\n" +
+				"a-+---W---+--\n" +
 				"  a   b   c  ",
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
 					VerticalLine:   " ",
@@ -408,22 +440,27 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: strings.Repeat(" ", 4) + "\n" +
-				"c+o+\n" +
+				"c+W+\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
-				"bo*o\n" +
+				"bWBW\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
-				"a+o+\n" +
+				"a+W+\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				" abc",
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
 					VerticalLine:   "|",
@@ -493,22 +530,27 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: " |||\n" +
-				"c+o+\n" +
+				"c+W+\n" +
 				" |||\n" +
 				" |||\n" +
 				" |||\n" +
-				"bo*o\n" +
+				"bWBW\n" +
 				" |||\n" +
 				" |||\n" +
 				" |||\n" +
-				"a+o+\n" +
+				"a+W+\n" +
 				" |||\n" +
 				" |||\n" +
 				" abc",
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
 					VerticalLine:   "|",
@@ -577,14 +619,19 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: " c  +o+\n" +
-				" b  o*o\n" +
-				" a  +o+\n" +
+			want: " c  +W+\n" +
+				" b  WBW\n" +
+				" a  +W+\n" +
 				"    abc",
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
 					VerticalLine:   "|",
@@ -653,9 +700,9 @@ func TestBoardEncoderEncodeBoard(
 					return board
 				}(),
 			},
-			want: "c+o+\n" +
-				"bo*o\n" +
-				"a+o+\n" +
+			want: "c+W+\n" +
+				"bWBW\n" +
+				"a+W+\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				" abc\n" +
 				strings.Repeat(" ", 4) + "\n" +
@@ -663,7 +710,12 @@ func TestBoardEncoderEncodeBoard(
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: " ",
 					VerticalLine:   " ",
@@ -747,15 +799,15 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: strings.Repeat(" ", 4*4) + "\n" +
-				" c   +   o   +  \n" +
+				" c   +   W   +  \n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
-				" b   o   *   o  \n" +
+				" b   W   B   W  \n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
-				" a   +   o   +  \n" +
+				" a   +   W   +  \n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4) + "\n" +
@@ -765,7 +817,12 @@ func TestBoardEncoderEncodeBoard(
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
 					VerticalLine:   "|",
@@ -849,15 +906,15 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: "     |   |   |  \n" +
-				" c  -+---o---+--\n" +
+				" c  -+---W---+--\n" +
 				"     |   |   |  \n" +
 				"     |   |   |  \n" +
 				"     |   |   |  \n" +
-				" b  -o---*---o--\n" +
+				" b  -W---B---W--\n" +
 				"     |   |   |  \n" +
 				"     |   |   |  \n" +
 				"     |   |   |  \n" +
-				" a  -+---o---+--\n" +
+				" a  -+---W---+--\n" +
 				"     |   |   |  \n" +
 				"     |   |   |  \n" +
 				strings.Repeat(" ", 4*4) + "\n" +
@@ -867,7 +924,12 @@ func TestBoardEncoderEncodeBoard(
 		},
 		data{
 			fields: fields{
-				encoder: EncodeStone,
+				encoder: func(
+					color models.Color,
+				) string {
+					symbol := sgf.EncodeColor(color)
+					return string(symbol)
+				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
 					VerticalLine:   "|",
@@ -935,9 +997,9 @@ func TestBoardEncoderEncodeBoard(
 				}(),
 			},
 			want: strings.Repeat(" ", 4) + "\n" +
-				"c+o+\n" +
-				"bo*o\n" +
-				"a+o+\n" +
+				"c+W+\n" +
+				"bWBW\n" +
+				"a+W+\n" +
 				" abc\n" +
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4),
