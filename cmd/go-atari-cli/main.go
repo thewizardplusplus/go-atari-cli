@@ -44,15 +44,7 @@ var (
 		Crosshairs:     "\u253c",
 	}
 
-	wideMargins = ascii.Margins{
-		Stone: ascii.StoneMargins{
-			HorizontalMargins: ascii.HorizontalMargins{
-				Left: 1,
-			},
-			VerticalMargins: ascii.VerticalMargins{
-				Bottom: 1,
-			},
-		},
+	baseWideMargins = ascii.Margins{
 		Legend: ascii.LegendMargins{
 			Column: ascii.VerticalMargins{
 				Top: 1,
@@ -62,6 +54,24 @@ var (
 			},
 		},
 		Board: ascii.VerticalMargins{
+			Top:    1,
+			Bottom: 1,
+		},
+	}
+	wideStoneMargins = ascii.StoneMargins{
+		HorizontalMargins: ascii.HorizontalMargins{
+			Left: 1,
+		},
+		VerticalMargins: ascii.VerticalMargins{
+			Bottom: 1,
+		},
+	}
+	extraWideStoneMargins = ascii.StoneMargins{
+		HorizontalMargins: ascii.HorizontalMargins{
+			Left:  1,
+			Right: 1,
+		},
+		VerticalMargins: ascii.VerticalMargins{
 			Top:    1,
 			Bottom: 1,
 		},
@@ -429,7 +439,13 @@ func main() {
 
 	var margins ascii.Margins
 	if *wide {
-		margins = wideMargins
+		margins = baseWideMargins
+
+		if *grid {
+			margins.Stone = extraWideStoneMargins
+		} else {
+			margins.Stone = wideStoneMargins
+		}
 	}
 
 	side :=
