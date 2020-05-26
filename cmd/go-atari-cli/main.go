@@ -107,6 +107,7 @@ func search(
 	color models.Color,
 	settings searchSettings,
 ) (models.Move, error) {
+	generator := models.MoveGenerator{}
 	randomSelector :=
 		selectors.RandomMoveSelector{}
 	generalSelector :=
@@ -118,7 +119,8 @@ func search(
 
 	var simulator simulators.Simulator
 	simulator = simulators.RolloutSimulator{
-		MoveSelector: randomSelector,
+		MoveGenerator: generator,
+		MoveSelector:  randomSelector,
 	}
 	if settings.parallelSimulator {
 		simulator =
@@ -154,8 +156,9 @@ func search(
 		)
 	builder = builders.IterativeBuilder{
 		Builder: builders.TreeBuilder{
-			NodeSelector: generalSelector,
-			Simulator:    bulkySimulator,
+			NodeSelector:  generalSelector,
+			MoveGenerator: generator,
+			Simulator:     bulkySimulator,
 		},
 		Terminator: terminator,
 	}
@@ -173,8 +176,9 @@ func search(
 		Board: board,
 	}
 	searcher := searchers.MoveSearcher{
-		Builder:      builder,
-		NodeSelector: generalSelector,
+		MoveGenerator: generator,
+		Builder:       builder,
+		NodeSelector:  generalSelector,
 	}
 	node, err := searcher.SearchMove(root)
 	if err != nil {
@@ -188,9 +192,13 @@ func check(
 	board models.Board,
 	color models.Color,
 ) error {
+	generator := models.MoveGenerator{}
 	previousMove :=
 		models.NewPreliminaryMove(color)
-	_, err := board.LegalMoves(previousMove)
+	_, err := generator.LegalMoves(
+		board,
+		previousMove,
+	)
 	return err // don't wrap
 }
 
