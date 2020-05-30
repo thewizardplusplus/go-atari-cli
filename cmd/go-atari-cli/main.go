@@ -103,7 +103,7 @@ type searchSettings struct {
 }
 
 func search(
-	board models.Board,
+	storage models.StoneStorage,
 	color models.Color,
 	settings searchSettings,
 ) (models.Move, error) {
@@ -172,8 +172,8 @@ func search(
 	previousMove :=
 		models.NewPreliminaryMove(color)
 	root := &tree.Node{
-		Move:  previousMove,
-		Board: board,
+		Move:    previousMove,
+		Storage: storage,
 	}
 	searcher := searchers.MoveSearcher{
 		MoveGenerator: generator,
@@ -189,29 +189,30 @@ func search(
 }
 
 func check(
-	board models.Board,
+	storage models.StoneStorage,
 	color models.Color,
 ) error {
 	generator := models.MoveGenerator{}
 	previousMove :=
 		models.NewPreliminaryMove(color)
 	_, err := generator.LegalMoves(
-		board,
+		storage,
 		previousMove,
 	)
 	return err // don't wrap
 }
 
 func writePrompt(
-	boardEncoder ascii.BoardEncoder,
-	board models.Board,
+	storageEncoder ascii.StoneStorageEncoder,
+	storage models.StoneStorage,
 	color models.Color,
 	side climodels.Side,
 ) error {
-	text := boardEncoder.EncodeBoard(board)
+	text := storageEncoder.
+		EncodeStoneStorage(storage)
 	fmt.Println(text)
 
-	err := check(board, color)
+	err := check(storage, color)
 	if err != nil {
 		return err // don't wrap
 	}
@@ -238,14 +239,14 @@ func makePrompt(
 
 func readMove(
 	reader *bufio.Reader,
-	boardEncoder ascii.BoardEncoder,
-	board models.Board,
+	storageEncoder ascii.StoneStorageEncoder,
+	storage models.StoneStorage,
 	color models.Color,
 	side climodels.Side,
 ) (models.Move, error) {
 	err := writePrompt(
-		boardEncoder,
-		board,
+		storageEncoder,
+		storage,
 		color,
 		side,
 	)
@@ -274,7 +275,7 @@ func readMove(
 		Color: color,
 		Point: point,
 	}
-	err = board.CheckMove(move)
+	err = storage.CheckMove(move)
 	if err != nil {
 		return models.Move{}, fmt.Errorf(
 			"incorrect move: %s",
@@ -286,15 +287,15 @@ func readMove(
 }
 
 func searchMove(
-	boardEncoder ascii.BoardEncoder,
-	board models.Board,
+	storageEncoder ascii.StoneStorageEncoder,
+	storage models.StoneStorage,
 	color models.Color,
 	side climodels.Side,
 	settings searchSettings,
 ) (models.Move, error) {
 	err := writePrompt(
-		boardEncoder,
-		board,
+		storageEncoder,
+		storage,
 		color,
 		side,
 	)
@@ -303,7 +304,7 @@ func searchMove(
 	}
 
 	return search(
-		board,
+		storage,
 		color,
 		settings,
 	)
@@ -312,7 +313,7 @@ func searchMove(
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	boardInSGF := flag.String(
+	storageInSGF := flag.String(
 		"sgf",
 		"",
 		"board in SGF "+
@@ -385,7 +386,10 @@ func main() {
 	)
 	flag.Parse()
 
-	board, err := sgf.DecodeBoard(*boardInSGF)
+	storage, err := sgf.DecodeStoneStorage(
+		*storageInSGF,
+		models.NewBoard,
+	)
 	if err != nil {
 		log.Fatal(
 			"unable to decode the board: ",
@@ -459,12 +463,13 @@ func main() {
 	side :=
 		climodels.NewSide(parsedHumanColor)
 	reader := bufio.NewReader(os.Stdin)
-	boardEncoder := ascii.NewBoardEncoder(
-		stoneEncoder,
-		placeholders,
-		margins,
-		1,
-	)
+	storageEncoder :=
+		ascii.NewStoneStorageEncoder(
+			stoneEncoder,
+			placeholders,
+			margins,
+			1,
+		)
 	settings := searchSettings{
 		maximalPass:            *pass,
 		maximalDuration:        *duration,
@@ -482,8 +487,8 @@ loop:
 			currentColor = parsedHumanColor
 			move, err = readMove(
 				reader,
-				boardEncoder,
-				board,
+				storageEncoder,
+				storage,
 				currentColor,
 				side,
 			)
@@ -491,8 +496,8 @@ loop:
 			currentColor =
 				parsedHumanColor.Negative()
 			move, err = searchMove(
-				boardEncoder,
-				board,
+				storageEncoder,
+				storage,
 				currentColor,
 				side,
 				settings,
@@ -516,7 +521,7 @@ loop:
 			continue loop
 		}
 
-		board = board.ApplyMove(move)
+		storage = storage.ApplyMove(move)
 		side = side.Invert()
 	}
 }
