@@ -9,7 +9,9 @@ import (
 	"github.com/thewizardplusplus/go-atari-models/encoding/sgf"
 )
 
-func TestBoardEncoder(test *testing.T) {
+func TestNewStoneStorageEncoder(
+	test *testing.T,
+) {
 	stoneEncoder := func(
 		color models.Color,
 	) string {
@@ -43,7 +45,7 @@ func TestBoardEncoder(test *testing.T) {
 			},
 		},
 	}
-	encoder := NewBoardEncoder(
+	encoder := NewStoneStorageEncoder(
 		stoneEncoder,
 		placeholders,
 		margins,
@@ -79,7 +81,7 @@ func TestBoardEncoder(test *testing.T) {
 	}
 }
 
-func TestBoardEncoderEncodeBoard(
+func TestStoneStorageEncoderEncodeStoneStorage(
 	test *testing.T,
 ) {
 	type fields struct {
@@ -89,7 +91,7 @@ func TestBoardEncoderEncodeBoard(
 		stoneWidth   int
 	}
 	type args struct {
-		board models.Board
+		storage models.StoneStorage
 	}
 	type data struct {
 		fields fields
@@ -115,7 +117,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: models.NewBoard(
+				storage: models.NewBoard(
 					models.Size{
 						Width:  3,
 						Height: 3,
@@ -144,7 +146,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -225,7 +227,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -306,7 +308,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -387,7 +389,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -477,7 +479,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -567,7 +569,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -648,7 +650,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -746,7 +748,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -853,7 +855,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -944,7 +946,7 @@ func TestBoardEncoderEncodeBoard(
 				stoneWidth: 1,
 			},
 			args: args{
-				board: func() models.Board {
+				storage: func() models.StoneStorage {
 					board := models.NewBoard(
 						models.Size{
 							Width:  3,
@@ -1005,15 +1007,16 @@ func TestBoardEncoderEncodeBoard(
 				strings.Repeat(" ", 4),
 		},
 	} {
-		encoder := BoardEncoder{
+		encoder := StoneStorageEncoder{
 			encoder: data.fields.encoder,
 			placeholders: data.fields.
 				placeholders,
 			margins:    data.fields.margins,
 			stoneWidth: data.fields.stoneWidth,
 		}
-		got :=
-			encoder.EncodeBoard(data.args.board)
+		got := encoder.EncodeStoneStorage(
+			data.args.storage,
+		)
 
 		if got != data.want {
 			test.Fail()
