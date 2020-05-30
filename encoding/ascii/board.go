@@ -19,22 +19,22 @@ type Placeholders struct {
 	Crosshairs     string
 }
 
-// BoardEncoder ...
-type BoardEncoder struct {
+// StoneStorageEncoder ...
+type StoneStorageEncoder struct {
 	encoder      StoneEncoder
 	placeholders Placeholders
 	margins      Margins
 	stoneWidth   int
 }
 
-// NewBoardEncoder ...
-func NewBoardEncoder(
+// NewStoneStorageEncoder ...
+func NewStoneStorageEncoder(
 	encoder StoneEncoder,
 	placeholders Placeholders,
 	margins Margins,
 	stoneWidth int,
-) BoardEncoder {
-	return BoardEncoder{
+) StoneStorageEncoder {
+	return StoneStorageEncoder{
 		encoder:      encoder,
 		placeholders: placeholders,
 		margins:      margins,
@@ -42,16 +42,18 @@ func NewBoardEncoder(
 	}
 }
 
-// EncodeBoard ...
-func (encoder BoardEncoder) EncodeBoard(
-	board models.Board,
+// EncodeStoneStorage ...
+func (
+	encoder StoneStorageEncoder,
+) EncodeStoneStorage(
+	storage models.StoneStorage,
 ) string {
 	stoneMargins := encoder.margins.Stone
 	legendMargins := encoder.margins.Legend
 
 	var rows []string
 	var currentRow string
-	points := board.Size().Points()
+	points := storage.Size().Points()
 	for _, point := range points {
 		if len(currentRow) == 0 {
 			axis := sgf.EncodeAxis(point.Row)
@@ -62,7 +64,7 @@ func (encoder BoardEncoder) EncodeBoard(
 		}
 
 		var encodedStone string
-		color, ok := board.Stone(point)
+		color, ok := storage.Stone(point)
 		if ok {
 			encodedStone = encoder.encoder(color)
 		} else {
@@ -75,7 +77,7 @@ func (encoder BoardEncoder) EncodeBoard(
 			encoder.placeholders.HorizontalLine,
 		)
 
-		lastColumn := board.Size().Height - 1
+		lastColumn := storage.Size().Height - 1
 		if point.Column == lastColumn {
 			rows = append(rows, currentRow)
 			currentRow = ""
@@ -89,7 +91,7 @@ func (encoder BoardEncoder) EncodeBoard(
 			sparseRows,
 			encoder.wrapWithEmptyLines(
 				[]string{row},
-				board.Size().Width,
+				storage.Size().Width,
 				stoneMargins.VerticalMargins,
 				encoder.placeholders.VerticalLine,
 			)...,
@@ -99,7 +101,7 @@ func (encoder BoardEncoder) EncodeBoard(
 	legendRow := encoder.spaces(
 		legendMargins.Row.Width(1),
 	)
-	width := board.Size().Width
+	width := storage.Size().Width
 	for i := 0; i < width; i++ {
 		axis := sgf.EncodeAxis(i)
 		legendRow += encoder.wrapWithSpaces(
@@ -111,21 +113,23 @@ func (encoder BoardEncoder) EncodeBoard(
 		sparseRows,
 		encoder.wrapWithEmptyLines(
 			[]string{legendRow},
-			board.Size().Width,
+			storage.Size().Width,
 			legendMargins.Column,
 		)...,
 	)
 
 	sparseRows = encoder.wrapWithEmptyLines(
 		sparseRows,
-		board.Size().Width,
+		storage.Size().Width,
 		encoder.margins.Board,
 	)
 
 	return strings.Join(sparseRows, "\n")
 }
 
-func (encoder BoardEncoder) wrapWithSpaces(
+func (
+	encoder StoneStorageEncoder,
+) wrapWithSpaces(
 	text string,
 	margins HorizontalMargins,
 	optionalSymbol ...string,
@@ -141,7 +145,7 @@ func (encoder BoardEncoder) wrapWithSpaces(
 	return prefix + text + suffix
 }
 
-func (encoder BoardEncoder) spaces(
+func (encoder StoneStorageEncoder) spaces(
 	count int,
 	optionalSymbol ...string,
 ) string {
@@ -155,7 +159,7 @@ func (encoder BoardEncoder) spaces(
 }
 
 func (
-	encoder BoardEncoder,
+	encoder StoneStorageEncoder,
 ) wrapWithEmptyLines(
 	lines []string,
 	width int,
@@ -187,7 +191,9 @@ func (
 	return wrappedLines
 }
 
-func (encoder BoardEncoder) emptyLines(
+func (
+	encoder StoneStorageEncoder,
+) emptyLines(
 	count int,
 	width int,
 	optionalSeparator ...string,
@@ -204,7 +210,9 @@ func (encoder BoardEncoder) emptyLines(
 	return lines
 }
 
-func (encoder BoardEncoder) emptyLine(
+func (
+	encoder StoneStorageEncoder,
+) emptyLine(
 	width int,
 	optionalSeparator ...string,
 ) string {
