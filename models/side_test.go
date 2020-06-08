@@ -16,11 +16,11 @@ func TestNewSide(test *testing.T) {
 	}
 
 	for _, data := range []data{
-		data{
+		{
 			args: args{models.Black},
 			want: Human,
 		},
-		data{
+		{
 			args: args{models.White},
 			want: Searcher,
 		},
@@ -40,11 +40,11 @@ func TestSideInvert(test *testing.T) {
 	}
 
 	for _, data := range []data{
-		data{
+		{
 			side: Searcher,
 			want: Human,
 		},
-		data{
+		{
 			side: Human,
 			want: Searcher,
 		},
