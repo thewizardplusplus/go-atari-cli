@@ -5,9 +5,7 @@ import (
 )
 
 // EncodeStone ...
-func EncodeStone(
-	color models.Color,
-) string {
+func EncodeStone(color models.Color) string {
 	var text string
 	switch color {
 	case models.Black:
