@@ -85,9 +85,7 @@ func colorize(
 	color models.Color,
 	colorsCodes colorCodeGroup,
 ) string {
-	return setTTYMode(colorsCodes[color]) +
-		text +
-		setTTYMode(0)
+	return setTTYMode(colorsCodes[color]) + text + setTTYMode(0)
 }
 
 func setTTYMode(mode int) string {
@@ -108,14 +106,13 @@ func search(
 	settings searchSettings,
 ) (models.Move, error) {
 	generator := models.MoveGenerator{}
-	randomSelector :=
-		selectors.RandomMoveSelector{}
-	generalSelector :=
-		selectors.MaximalNodeSelector{
-			NodeScorer: scorers.UCBScorer{
-				Factor: ucbFactor,
-			},
-		}
+
+	randomSelector := selectors.RandomMoveSelector{}
+	generalSelector := selectors.MaximalNodeSelector{
+		NodeScorer: scorers.UCBScorer{
+			Factor: ucbFactor,
+		},
+	}
 
 	var simulator simulators.Simulator
 	simulator = simulators.RolloutSimulator{
@@ -123,37 +120,28 @@ func search(
 		MoveSelector:  randomSelector,
 	}
 	if settings.parallelSimulator {
-		simulator =
-			simulators.ParallelSimulator{
-				Simulator:   simulator,
-				Concurrency: runtime.NumCPU(),
-			}
+		simulator = simulators.ParallelSimulator{
+			Simulator:   simulator,
+			Concurrency: runtime.NumCPU(),
+		}
 	}
 
 	var bulkySimulator builders.BulkySimulator
 	if !settings.parallelBulkySimulator {
-		bulkySimulator =
-			bulky.FirstNodeSimulator{
-				Simulator: simulator,
-			}
+		bulkySimulator = bulky.FirstNodeSimulator{
+			Simulator: simulator,
+		}
 	} else {
-		bulkySimulator =
-			bulky.AllNodesSimulator{
-				Simulator: simulator,
-			}
+		bulkySimulator = bulky.AllNodesSimulator{
+			Simulator: simulator,
+		}
 	}
 
 	var builder builders.Builder
-	terminator :=
-		terminators.NewGroupTerminator(
-			terminators.NewPassTerminator(
-				settings.maximalPass,
-			),
-			terminators.NewTimeTerminator(
-				time.Now,
-				settings.maximalDuration,
-			),
-		)
+	terminator := terminators.NewGroupTerminator(
+		terminators.NewPassTerminator(settings.maximalPass),
+		terminators.NewTimeTerminator(time.Now, settings.maximalDuration),
+	)
 	builder = builders.IterativeBuilder{
 		Builder: builders.TreeBuilder{
 			NodeSelector:  generalSelector,
@@ -169,10 +157,8 @@ func search(
 		}
 	}
 
-	previousMove :=
-		models.NewPreliminaryMove(color)
 	root := &tree.Node{
-		Move:    previousMove,
+		Move:    models.NewPreliminaryMove(color),
 		Storage: storage,
 	}
 	searcher := searchers.MoveSearcher{
@@ -188,17 +174,9 @@ func search(
 	return node.Move, nil
 }
 
-func check(
-	storage models.StoneStorage,
-	color models.Color,
-) error {
+func check(storage models.StoneStorage, color models.Color) error {
 	generator := models.MoveGenerator{}
-	previousMove :=
-		models.NewPreliminaryMove(color)
-	_, err := generator.LegalMoves(
-		storage,
-		previousMove,
-	)
+	_, err := generator.LegalMoves(storage, models.NewPreliminaryMove(color))
 	return err // don't wrap
 }
 
@@ -208,12 +186,10 @@ func writePrompt(
 	color models.Color,
 	side climodels.Side,
 ) error {
-	text := storageEncoder.
-		EncodeStoneStorage(storage)
+	text := storageEncoder.EncodeStoneStorage(storage)
 	fmt.Println(text)
 
-	err := check(storage, color)
-	if err != nil {
+	if err := check(storage, color); err != nil {
 		return err // don't wrap
 	}
 
@@ -221,18 +197,13 @@ func writePrompt(
 	if side == climodels.Searcher {
 		mark = "(searching) "
 	}
-
 	prompt := makePrompt(color, mark)
-	// don't break the line
-	fmt.Print(prompt)
+	fmt.Print(prompt) // don't break the line
 
 	return nil
 }
 
-func makePrompt(
-	color models.Color,
-	data interface{},
-) string {
+func makePrompt(color models.Color, data interface{}) string {
 	prompt := ascii.EncodeColor(color)
 	return fmt.Sprintf("%s> %v", prompt, data)
 }
@@ -244,43 +215,27 @@ func readMove(
 	color models.Color,
 	side climodels.Side,
 ) (models.Move, error) {
-	err := writePrompt(
-		storageEncoder,
-		storage,
-		color,
-		side,
-	)
-	if err != nil {
+	if err := writePrompt(storageEncoder, storage, color, side); err != nil {
 		return models.Move{}, err // don't wrap
 	}
 
 	text, err := reader.ReadString('\n')
 	if err != nil && err != io.EOF {
-		return models.Move{}, fmt.Errorf(
-			"unable to read the move: %s",
-			err,
-		)
+		return models.Move{}, fmt.Errorf("unable to read the move: %s", err)
 	}
 
 	text = strings.TrimSuffix(text, "\n")
 	point, err := sgf.DecodePoint(text)
 	if err != nil {
-		return models.Move{}, fmt.Errorf(
-			"unable to decode the point: %s",
-			err,
-		)
+		return models.Move{}, fmt.Errorf("unable to decode the point: %s", err)
 	}
 
 	move := models.Move{
 		Color: color,
 		Point: point,
 	}
-	err = storage.CheckMove(move)
-	if err != nil {
-		return models.Move{}, fmt.Errorf(
-			"incorrect move: %s",
-			err,
-		)
+	if err := storage.CheckMove(move); err != nil {
+		return models.Move{}, fmt.Errorf("incorrect move: %s", err)
 	}
 
 	return move, nil
@@ -293,21 +248,11 @@ func searchMove(
 	side climodels.Side,
 	settings searchSettings,
 ) (models.Move, error) {
-	err := writePrompt(
-		storageEncoder,
-		storage,
-		color,
-		side,
-	)
-	if err != nil {
+	if err := writePrompt(storageEncoder, storage, color, side); err != nil {
 		return models.Move{}, err // don't wrap
 	}
 
-	return search(
-		storage,
-		color,
-		settings,
-	)
+	return search(storage, color, settings)
 }
 
 func main() {
@@ -316,20 +261,14 @@ func main() {
 	storageInSGF := flag.String(
 		"sgf",
 		"",
-		"board in SGF "+
-			"(default: empty board 5x5)",
+		"board in SGF (default: empty board 5x5)",
 	)
 	humanColor := flag.String(
 		"humanColor",
 		"random",
-		"human color "+
-			"(allowed: random, black, white)",
+		"human color (allowed: random, black, white)",
 	)
-	pass := flag.Int(
-		"pass",
-		1000,
-		"building pass",
-	)
+	pass := flag.Int("pass", 1000, "building pass")
 	duration := flag.Duration(
 		"duration",
 		10*time.Second,
@@ -345,60 +284,29 @@ func main() {
 		false,
 		"parallel bulky simulator",
 	)
-	parallelBuilder := flag.Bool(
-		"parallelBuilder",
-		true,
-		"parallel builder",
-	)
-	useUnicode := flag.Bool(
-		"unicode",
-		false,
-		"use Unicode to display stones",
-	)
-	colorful := flag.Bool(
-		"colorful",
-		false,
-		"use colors to display stones",
-	)
+	parallelBuilder := flag.Bool("parallelBuilder", true, "parallel builder")
+	useUnicode := flag.Bool("unicode", false, "use Unicode to display stones")
+	colorful := flag.Bool("colorful", false, "use colors to display stones")
 	blackColor := flag.Int(
 		"blackColor",
 		34, // blue
-		"SGR parameter "+
-			"for ANSI escape sequences "+
-			"for setting a color of black stones",
+		"SGR parameter for ANSI escape sequences for setting a color of black stones",
 	)
 	whiteColor := flag.Int(
 		"whiteColor",
 		31, // red
-		"SGR parameter "+
-			"for ANSI escape sequences "+
-			"for setting a color of white stones",
+		"SGR parameter for ANSI escape sequences for setting a color of white stones",
 	)
-	wide := flag.Bool(
-		"wide",
-		false,
-		"display the board wide",
-	)
-	grid := flag.Bool(
-		"grid",
-		true,
-		"display the board grid",
-	)
+	wide := flag.Bool("wide", false, "display the board wide")
+	grid := flag.Bool("grid", true, "display the board grid")
 	flag.Parse()
 
-	storage, err := sgf.DecodeStoneStorage(
-		*storageInSGF,
-		models.NewBoard,
-	)
+	storage, err := sgf.DecodeStoneStorage(*storageInSGF, models.NewBoard)
 	if err != nil {
-		log.Fatal(
-			"unable to decode the board: ",
-			err,
-		)
+		log.Fatal("unable to decode the board: ", err)
 	}
 
-	parsedHumanColor, err :=
-		ascii.DecodeColor(*humanColor)
+	parsedHumanColor, err := ascii.DecodeColor(*humanColor)
 	switch {
 	case err == nil:
 	case *humanColor == "random":
@@ -408,10 +316,7 @@ func main() {
 			parsedHumanColor = models.White
 		}
 	default:
-		log.Fatal(
-			"unable to decode the color: ",
-			err,
-		)
+		log.Fatal("unable to decode the color: ", err)
 	}
 
 	var stoneEncoder ascii.StoneEncoder
@@ -420,28 +325,19 @@ func main() {
 		stoneEncoder = unicode.EncodeStone
 		placeholders = unicodePlaceholders
 	} else {
-		stoneEncoder = func(
-			color models.Color,
-		) string {
-			symbol := sgf.EncodeColor(color)
-			return string(symbol)
+		stoneEncoder = func(color models.Color) string {
+			return string(sgf.EncodeColor(color))
 		}
 		placeholders = asciiPlaceholders
 	}
 	if *colorful {
 		baseStoneEncoder := stoneEncoder
-		stoneEncoder = func(
-			color models.Color,
-		) string {
+		stoneEncoder = func(color models.Color) string {
 			text := baseStoneEncoder(color)
-			return colorize(
-				text,
-				color,
-				colorCodeGroup{
-					models.Black: *blackColor,
-					models.White: *whiteColor,
-				},
-			)
+			return colorize(text, color, colorCodeGroup{
+				models.Black: *blackColor,
+				models.White: *whiteColor,
+			})
 		}
 	}
 	if !*grid {
@@ -460,16 +356,14 @@ func main() {
 		}
 	}
 
-	side :=
-		climodels.NewSide(parsedHumanColor)
+	side := climodels.NewSide(parsedHumanColor)
 	reader := bufio.NewReader(os.Stdin)
-	storageEncoder :=
-		ascii.NewStoneStorageEncoder(
-			stoneEncoder,
-			placeholders,
-			margins,
-			1,
-		)
+	storageEncoder := ascii.NewStoneStorageEncoder(
+		stoneEncoder,
+		placeholders,
+		margins,
+		1,
+	)
 	settings := searchSettings{
 		maximalPass:            *pass,
 		maximalDuration:        *duration,
@@ -485,23 +379,10 @@ loop:
 		switch side {
 		case climodels.Human:
 			currentColor = parsedHumanColor
-			move, err = readMove(
-				reader,
-				storageEncoder,
-				storage,
-				currentColor,
-				side,
-			)
+			move, err = readMove(reader, storageEncoder, storage, currentColor, side)
 		case climodels.Searcher:
-			currentColor =
-				parsedHumanColor.Negative()
-			move, err = searchMove(
-				storageEncoder,
-				storage,
-				currentColor,
-				side,
-				settings,
-			)
+			currentColor = parsedHumanColor.Negative()
+			move, err = searchMove(storageEncoder, storage, currentColor, side, settings)
 			if err == nil {
 				text := sgf.EncodePoint(move.Point)
 				fmt.Println(text)
@@ -509,10 +390,8 @@ loop:
 		}
 		switch err {
 		case nil:
-		case models.ErrAlreadyLoss,
-			models.ErrAlreadyWin:
-			prompt :=
-				makePrompt(currentColor, err)
+		case models.ErrAlreadyLoss, models.ErrAlreadyWin:
+			prompt := makePrompt(currentColor, err)
 			fmt.Println(prompt)
 
 			break loop
