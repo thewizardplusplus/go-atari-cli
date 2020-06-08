@@ -32,6 +32,7 @@ const (
 	ucbFactor = math.Sqrt2
 )
 
+// nolint: gochecknoglobals
 var (
 	asciiPlaceholders = ascii.Placeholders{
 		HorizontalLine: "-",
@@ -114,7 +115,7 @@ func search(
 		},
 	}
 
-	var simulator simulators.Simulator
+	var simulator simulators.Simulator // nolint: staticcheck
 	simulator = simulators.RolloutSimulator{
 		MoveGenerator: generator,
 		MoveSelector:  randomSelector,
