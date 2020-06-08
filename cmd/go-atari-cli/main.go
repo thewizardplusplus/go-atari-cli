@@ -262,14 +262,14 @@ func main() {
 	storageInSGF := flag.String(
 		"sgf",
 		"",
-		"board in SGF (default: empty board 5x5)",
+		"board in Smart Game Format (default: empty board 5x5)",
 	)
 	humanColor := flag.String(
 		"humanColor",
 		"random",
 		"human color (allowed: random, black, white)",
 	)
-	pass := flag.Int("pass", 1000, "building pass")
+	passes := flag.Int("passes", 1000, "building passes")
 	duration := flag.Duration(
 		"duration",
 		10*time.Second,
@@ -278,16 +278,20 @@ func main() {
 	parallelSimulator := flag.Bool(
 		"parallelSimulator",
 		false,
-		"parallel simulator",
+		"use parallel game simulating of a single node child",
 	)
 	parallelBulkySimulator := flag.Bool(
 		"parallelBulkySimulator",
 		false,
-		"parallel bulky simulator",
+		"use parallel game simulating of all node children",
 	)
-	parallelBuilder := flag.Bool("parallelBuilder", true, "parallel builder")
-	useUnicode := flag.Bool("unicode", false, "use Unicode to display stones")
-	colorful := flag.Bool("colorful", false, "use colors to display stones")
+	parallelBuilder := flag.Bool(
+		"parallelBuilder",
+		true,
+		"use parallel tree building",
+	)
+	useUnicode := flag.Bool("unicode", true, "use Unicode to display stones")
+	colorful := flag.Bool("colorful", true, "use colors to display stones")
 	blackColor := flag.Int(
 		"blackColor",
 		34, // blue
@@ -298,7 +302,7 @@ func main() {
 		31, // red
 		"SGR parameter for ANSI escape sequences for setting a color of white stones",
 	)
-	wide := flag.Bool("wide", false, "display the board wide")
+	wide := flag.Bool("wide", true, "display the board wide")
 	grid := flag.Bool("grid", true, "display the board grid")
 	flag.Parse()
 
@@ -366,7 +370,7 @@ func main() {
 		1,
 	)
 	settings := searchSettings{
-		maximalPass:            *pass,
+		maximalPass:            *passes,
 		maximalDuration:        *duration,
 		parallelSimulator:      *parallelSimulator,
 		parallelBulkySimulator: *parallelBulkySimulator,
