@@ -9,14 +9,9 @@ import (
 	"github.com/thewizardplusplus/go-atari-models/encoding/sgf"
 )
 
-func TestNewStoneStorageEncoder(
-	test *testing.T,
-) {
-	stoneEncoder := func(
-		color models.Color,
-	) string {
-		symbol := sgf.EncodeColor(color)
-		return string(symbol)
+func TestNewStoneStorageEncoder(test *testing.T) {
+	stoneEncoder := func(color models.Color) string {
+		return string(sgf.EncodeColor(color))
 	}
 	placeholders := Placeholders{
 		HorizontalLine: "-",
@@ -52,27 +47,17 @@ func TestNewStoneStorageEncoder(
 		2,
 	)
 
-	gotEncoder := reflect.
-		ValueOf(encoder.encoder).
-		Pointer()
-	wantEncoder := reflect.
-		ValueOf(stoneEncoder).
-		Pointer()
+	gotEncoder := reflect.ValueOf(encoder.encoder).Pointer()
+	wantEncoder := reflect.ValueOf(stoneEncoder).Pointer()
 	if gotEncoder != wantEncoder {
 		test.Fail()
 	}
 
-	if !reflect.DeepEqual(
-		encoder.placeholders,
-		placeholders,
-	) {
+	if !reflect.DeepEqual(encoder.placeholders, placeholders) {
 		test.Fail()
 	}
 
-	if !reflect.DeepEqual(
-		encoder.margins,
-		margins,
-	) {
+	if !reflect.DeepEqual(encoder.margins, margins) {
 		test.Fail()
 	}
 
@@ -81,9 +66,7 @@ func TestNewStoneStorageEncoder(
 	}
 }
 
-func TestStoneStorageEncoderEncodeStoneStorage(
-	test *testing.T,
-) {
+func TestStoneStorageEncoderEncodeStoneStorage(test *testing.T) {
 	type fields struct {
 		encoder      StoneEncoder
 		placeholders Placeholders
@@ -100,13 +83,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 	}
 
 	for _, data := range []data{
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
@@ -129,13 +109,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				"a+++\n" +
 				" abc",
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
@@ -154,44 +131,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -203,13 +179,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				"a+W+\n" +
 				" abc",
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: " ",
@@ -235,44 +208,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -284,13 +256,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				"a +   W   +  \n" +
 				"  a   b   c  ",
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
@@ -316,44 +285,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -365,13 +333,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				"a-+---W---+--\n" +
 				"  a   b   c  ",
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
@@ -397,44 +362,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -455,13 +419,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				strings.Repeat(" ", 4) + "\n" +
 				" abc",
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
@@ -487,44 +448,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -545,13 +505,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				" |||\n" +
 				" abc",
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
@@ -577,44 +534,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -626,13 +582,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				" a  +W+\n" +
 				"    abc",
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
@@ -658,44 +611,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -710,13 +662,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				strings.Repeat(" ", 4) + "\n" +
 				strings.Repeat(" ", 4),
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: " ",
@@ -756,44 +705,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -817,13 +765,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4),
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
@@ -863,44 +808,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -924,13 +868,10 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 				strings.Repeat(" ", 4*4) + "\n" +
 				strings.Repeat(" ", 4*4),
 		},
-		data{
+		{
 			fields: fields{
-				encoder: func(
-					color models.Color,
-				) string {
-					symbol := sgf.EncodeColor(color)
-					return string(symbol)
+				encoder: func(color models.Color) string {
+					return string(sgf.EncodeColor(color))
 				},
 				placeholders: Placeholders{
 					HorizontalLine: "-",
@@ -954,44 +895,43 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 						},
 					)
 
-					moves := []models.Move{
-						models.Move{
+					for _, move := range []models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    0,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 0,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.Black,
 							Point: models.Point{
 								Column: 1,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 2,
 								Row:    1,
 							},
 						},
-						models.Move{
+						{
 							Color: models.White,
 							Point: models.Point{
 								Column: 1,
 								Row:    2,
 							},
 						},
-					}
-					for _, move := range moves {
+					} {
 						board = board.ApplyMove(move)
 					}
 
@@ -1008,15 +948,12 @@ func TestStoneStorageEncoderEncodeStoneStorage(
 		},
 	} {
 		encoder := StoneStorageEncoder{
-			encoder: data.fields.encoder,
-			placeholders: data.fields.
-				placeholders,
-			margins:    data.fields.margins,
-			stoneWidth: data.fields.stoneWidth,
+			encoder:      data.fields.encoder,
+			placeholders: data.fields.placeholders,
+			margins:      data.fields.margins,
+			stoneWidth:   data.fields.stoneWidth,
 		}
-		got := encoder.EncodeStoneStorage(
-			data.args.storage,
-		)
+		got := encoder.EncodeStoneStorage(data.args.storage)
 
 		if got != data.want {
 			test.Fail()

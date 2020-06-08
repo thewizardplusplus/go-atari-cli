@@ -8,9 +8,7 @@ import (
 )
 
 // StoneEncoder ...
-type StoneEncoder func(
-	color models.Color,
-) string
+type StoneEncoder func(color models.Color) string
 
 // Placeholders ...
 type Placeholders struct {
@@ -43,33 +41,26 @@ func NewStoneStorageEncoder(
 }
 
 // EncodeStoneStorage ...
-func (
-	encoder StoneStorageEncoder,
-) EncodeStoneStorage(
+func (encoder StoneStorageEncoder) EncodeStoneStorage(
 	storage models.StoneStorage,
 ) string {
-	stoneMargins := encoder.margins.Stone
-	legendMargins := encoder.margins.Legend
+	stoneMargins, legendMargins := encoder.margins.Stone, encoder.margins.Legend
 
 	var rows []string
 	var currentRow string
-	points := storage.Size().Points()
-	for _, point := range points {
+	for _, point := range storage.Size().Points() {
 		if len(currentRow) == 0 {
-			axis := sgf.EncodeAxis(point.Row)
 			currentRow += encoder.wrapWithSpaces(
-				string(axis),
+				string(sgf.EncodeAxis(point.Row)),
 				legendMargins.Row,
 			)
 		}
 
 		var encodedStone string
-		color, ok := storage.Stone(point)
-		if ok {
+		if color, ok := storage.Stone(point); ok {
 			encodedStone = encoder.encoder(color)
 		} else {
-			encodedStone =
-				encoder.placeholders.Crosshairs
+			encodedStone = encoder.placeholders.Crosshairs
 		}
 		currentRow += encoder.wrapWithSpaces(
 			encodedStone,
@@ -77,8 +68,7 @@ func (
 			encoder.placeholders.HorizontalLine,
 		)
 
-		lastColumn := storage.Size().Height - 1
-		if point.Column == lastColumn {
+		if lastColumn := storage.Size().Height - 1; point.Column == lastColumn {
 			rows = append(rows, currentRow)
 			currentRow = ""
 		}
@@ -87,36 +77,26 @@ func (
 
 	var sparseRows []string
 	for _, row := range rows {
-		sparseRows = append(
-			sparseRows,
-			encoder.wrapWithEmptyLines(
-				[]string{row},
-				storage.Size().Width,
-				stoneMargins.VerticalMargins,
-				encoder.placeholders.VerticalLine,
-			)...,
-		)
+		sparseRows = append(sparseRows, encoder.wrapWithEmptyLines(
+			[]string{row},
+			storage.Size().Width,
+			stoneMargins.VerticalMargins,
+			encoder.placeholders.VerticalLine,
+		)...)
 	}
 
-	legendRow := encoder.spaces(
-		legendMargins.Row.Width(1),
-	)
-	width := storage.Size().Width
-	for i := 0; i < width; i++ {
-		axis := sgf.EncodeAxis(i)
+	legendRow := encoder.spaces(legendMargins.Row.Width(1))
+	for i := 0; i < storage.Size().Width; i++ {
 		legendRow += encoder.wrapWithSpaces(
-			string(axis),
+			string(sgf.EncodeAxis(i)),
 			stoneMargins.HorizontalMargins,
 		)
 	}
-	sparseRows = append(
-		sparseRows,
-		encoder.wrapWithEmptyLines(
-			[]string{legendRow},
-			storage.Size().Width,
-			legendMargins.Column,
-		)...,
-	)
+	sparseRows = append(sparseRows, encoder.wrapWithEmptyLines(
+		[]string{legendRow},
+		storage.Size().Width,
+		legendMargins.Column,
+	)...)
 
 	sparseRows = encoder.wrapWithEmptyLines(
 		sparseRows,
@@ -127,21 +107,13 @@ func (
 	return strings.Join(sparseRows, "\n")
 }
 
-func (
-	encoder StoneStorageEncoder,
-) wrapWithSpaces(
+func (encoder StoneStorageEncoder) wrapWithSpaces(
 	text string,
 	margins HorizontalMargins,
 	optionalSymbol ...string,
 ) string {
-	prefix := encoder.spaces(
-		margins.Left,
-		optionalSymbol...,
-	)
-	suffix := encoder.spaces(
-		margins.Right,
-		optionalSymbol...,
-	)
+	prefix := encoder.spaces(margins.Left, optionalSymbol...)
+	suffix := encoder.spaces(margins.Right, optionalSymbol...)
 	return prefix + text + suffix
 }
 
@@ -158,66 +130,47 @@ func (encoder StoneStorageEncoder) spaces(
 	return strings.Repeat(symbol, count)
 }
 
-func (
-	encoder StoneStorageEncoder,
-) wrapWithEmptyLines(
+func (encoder StoneStorageEncoder) wrapWithEmptyLines(
 	lines []string,
 	width int,
 	margins VerticalMargins,
 	optionalSeparator ...string,
 ) []string {
 	var wrappedLines []string
-	wrappedLines = append(
-		wrappedLines,
-		encoder.emptyLines(
-			margins.Top,
-			width,
-			optionalSeparator...,
-		)...,
-	)
-	wrappedLines = append(
-		wrappedLines,
-		lines...,
-	)
-	wrappedLines = append(
-		wrappedLines,
-		encoder.emptyLines(
-			margins.Bottom,
-			width,
-			optionalSeparator...,
-		)...,
-	)
+	wrappedLines = append(wrappedLines, encoder.emptyLines(
+		margins.Top,
+		width,
+		optionalSeparator...,
+	)...)
+	wrappedLines = append(wrappedLines, lines...)
+	wrappedLines = append(wrappedLines, encoder.emptyLines(
+		margins.Bottom,
+		width,
+		optionalSeparator...,
+	)...)
 
 	return wrappedLines
 }
 
-func (
-	encoder StoneStorageEncoder,
-) emptyLines(
+func (encoder StoneStorageEncoder) emptyLines(
 	count int,
 	width int,
 	optionalSeparator ...string,
 ) []string {
 	var lines []string
 	for i := 0; i < count; i++ {
-		line := encoder.emptyLine(
-			width,
-			optionalSeparator...,
-		)
+		line := encoder.emptyLine(width, optionalSeparator...)
 		lines = append(lines, line)
 	}
 
 	return lines
 }
 
-func (
-	encoder StoneStorageEncoder,
-) emptyLine(
+func (encoder StoneStorageEncoder) emptyLine(
 	width int,
 	optionalSeparator ...string,
 ) string {
-	stoneMargins := encoder.margins.Stone
-	legendMargins := encoder.margins.Legend
+	stoneMargins, legendMargins := encoder.margins.Stone, encoder.margins.Legend
 
 	var separator string
 	if len(optionalSeparator) != 0 {
@@ -226,14 +179,11 @@ func (
 		separator = " "
 	}
 
-	line := encoder.spaces(
-		legendMargins.Row.Width(1),
-	)
+	line := encoder.spaces(legendMargins.Row.Width(1))
 	for i := 0; i < width; i++ {
-		line +=
-			encoder.spaces(stoneMargins.Left) +
-				separator +
-				encoder.spaces(stoneMargins.Right)
+		line += encoder.spaces(stoneMargins.Left) +
+			separator +
+			encoder.spaces(stoneMargins.Right)
 	}
 
 	return line
@@ -242,8 +192,7 @@ func (
 func reverse(strings []string) {
 	left, right := 0, len(strings)-1
 	for left < right {
-		strings[left], strings[right] =
-			strings[right], strings[left]
+		strings[left], strings[right] = strings[right], strings[left]
 		left, right = left+1, right-1
 	}
 }
