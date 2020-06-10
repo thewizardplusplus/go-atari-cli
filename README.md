@@ -39,6 +39,28 @@ Options:
 - `-wide` &mdash; display the board wide (default: `true`; for inverting use `-wide=false`);
 - `-grid` &mdash; display the board grid (default: `true`; for inverting use `-grid=false`).
 
+## Examples
+
+`unicode.EncodeStone()`:
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/thewizardplusplus/go-atari-cli/encoding/unicode"
+	models "github.com/thewizardplusplus/go-atari-models"
+)
+
+func main() {
+	stone := unicode.EncodeStone(models.White)
+	fmt.Printf("%v\n", stone)
+
+	// Output: ○
+}
+```
+
 ## License
 
 The MIT License (MIT)
