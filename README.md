@@ -9,6 +9,42 @@ The [Atari Go](https://senseis.xmp.net/?AtariGo) program with a terminal-based i
 
 _**Disclaimer:** this program was written directly on an Android smartphone with the AnGoIde IDE._
 
+## Features
+
+- displaying a board:
+  - by symbols (to choose):
+    - ASCII;
+    - Unicode;
+  - by colors (to choose):
+    - monochrome;
+    - colorful;
+  - by size (to choose):
+    - terse;
+    - wide;
+  - by decor (to choose):
+    - without the board grid;
+    - with the board grid;
+  - misc.:
+    - marking searching process;
+- interacting via text commands (moves in [Smart Game Format](https://senseis.xmp.net/?SGF));
+- options:
+  - initial position in [Smart Game Format](https://senseis.xmp.net/?SGF);
+  - human color (i.e. a computer can move first):
+    - support automatic random selecting (optional);
+  - move searching restrictions:
+    - passes of tree building;
+    - duration of tree building;
+  - optimization via parallel move searching:
+    - parallel game simulating:
+      - of a single node child;
+      - of all node children;
+    - parallel tree building;
+  - displaying:
+    - switching between ASCII/Unicode modes;
+    - switching between monochrome/colorful modes;
+    - switching between terse/wide modes;
+    - switching between modes without/with the board grid.
+
 ## Installation
 
 ```
